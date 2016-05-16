@@ -1,12 +1,16 @@
-package ArribaPackage;
+package testArribaPackage;
 
-import org.junit.Test;
+
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterTest;
+//import org.junit.Test;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,13 +19,12 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
 
 public class MyFirstTest {
 
     @Test
-    public void startWebDriver() {
+    public void testStartWebDriver() {
         WebDriver driver = new FirefoxDriver();
         //driver.manage().window().maximize();
         StringBuffer verificationErrors = new StringBuffer();
@@ -66,10 +69,10 @@ public class MyFirstTest {
 
         // wait for 60 sec for element "Poisk" displayed
 
-        boolean isPoiskFound = false;
+       boolean isPoiskFound = false;
         for (int second = 0; second <= 60; second++) {
             try {
-                if (driver.findElement(By.linkText("Поиск")).isDisplayed()) {
+                if (driver.findElement(By.xpath("//li/a[contains(@href,'index')]")).isDisplayed()) {
                     isPoiskFound = true;
                     break;
                 }
@@ -85,14 +88,14 @@ public class MyFirstTest {
             verificationErrors.append("FAIL! Menu Item 'Poisk' HES NOT FOUND");
         }
 
-        driver.findElement(By.linkText("Поиск")).click();    // Click on menu Item "Poisk"
+        driver.findElement(By.xpath("//li/a[contains(@href,'index')]")).click();    // Click on menu Item "Poisk"
 
         //Wait for  string 'Опыт:'
         try {
             WebDriverWait wait = new WebDriverWait(driver, 15);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='vspacer15']//div[contains(text(),'Опыт:')]")));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='vspacer15']//div//label[contains(text(),'Beginner')]")));
         } catch (Exception e) {
-            verificationErrors.append("FAIL! String 'Опыт:' IS NOT FOUND");
+            verificationErrors.append("FAIL! String 'Beginner:'(in  filter) IS NOT FOUND");
         }
         //<LOGIN TESTING: FINISH>
 
@@ -116,7 +119,7 @@ public class MyFirstTest {
 
         //Count dateResult
         long dateResult = (currentUnixTime - successDateUnixTime);
-        if (dateResult > 1800) {  //Seconds
+        if (dateResult > 1) {  //Seconds
             verificationErrors.append("FAIL! Time is much then 30 sec!");
         }
         // <TESTING OF LAST SUCCESSFUL SYNCHRONIZATION: FINISH>
@@ -169,8 +172,12 @@ public class MyFirstTest {
 
         //Shows all errors which were written in log file
         System.out.println(verificationErrors.toString());
+
+        driver.quit();
     }
+
 }
+
 
 
 
