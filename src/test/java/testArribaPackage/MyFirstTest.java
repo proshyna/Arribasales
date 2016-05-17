@@ -2,6 +2,7 @@ package testArribaPackage;
 
 
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -11,6 +12,9 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.AfterTest;
 //import org.junit.Test;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +22,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.System.out;
 import static org.junit.Assert.assertEquals;
 
 
@@ -119,8 +124,18 @@ public class MyFirstTest {
 
         //Count dateResult
         long dateResult = (currentUnixTime - successDateUnixTime);
-        if (dateResult > 1) {  //Seconds
-            verificationErrors.append("FAIL! Time is much then 30 sec!");
+
+
+        if (dateResult < 1800) {
+        }  //Seconds
+        else {
+            try {
+                FileUtils.writeStringToFile(new File("test.txt"), "FAIL! Time is much then 30 sec!");
+                // PrintWriter myfile = new PrintWriter("data.txt");
+                // out.println("proba pera -FAIL! Time is much then 30 sec!");
+            } catch (Exception e) {
+            }
+            //verificationErrors.append("FAIL! Time is much then 30 sec!");
         }
         // <TESTING OF LAST SUCCESSFUL SYNCHRONIZATION: FINISH>
 
@@ -171,7 +186,7 @@ public class MyFirstTest {
         driver.findElement(By.xpath("//div[@id='skinny-nav']/ul[2]/li[4]/ul/li[4]/a")).click();
 
         //Shows all errors which were written in log file
-        System.out.println(verificationErrors.toString());
+        out.println(verificationErrors.toString());
 
         driver.quit();
     }
