@@ -1,46 +1,44 @@
 package testArribaPackage;
 
 
-
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.AfterTest;
 //import org.junit.Test;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import static java.lang.System.out;
 import static org.junit.Assert.assertEquals;
 
 
 public class MyFirstTest {
+    private WebDriver driver = new FirefoxDriver();
 
     @Test
     public void testStartWebDriver() {
-        WebDriver driver = new FirefoxDriver();
+
+
         //driver.manage().window().maximize();
         StringBuffer verificationErrors = new StringBuffer();
+        WebDriverWait myDynamicElement = new WebDriverWait(driver, 10);
 
         //<LOGIN TESTING: START>
         driver.navigate().to("http://user:greendev0987@arribasales.sandice.net");
 
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
         driver.findElement(By.xpath("//div[@class='auth-clients']//a[contains(@href,'upwork')]")).click();
 
-
         String homePage = driver.getWindowHandle(); // Store your parent window
+
         String subWindowHandler = null;
 
         Set<String> handles = driver.getWindowHandles(); // get all window handles
@@ -49,20 +47,21 @@ public class MyFirstTest {
             subWindowHandler = iterator.next();
         }
 
-
         driver.switchTo().window(subWindowHandler); // switch to popup window
+
         // perform operations on popup
-
-        //check "Log in and get to work" text exist
-
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
+            //check "Log in and get to work" text exist
+        try {
+            myDynamicElement.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='layout']/div[2]/div/h1")));
+        } catch (Exception e) {
+            throw new MyFirstTest.TestError("FAIL!'Waiting for element present.Element '//div[@id='layout']/div[2]/div/h1' IS NOT FUND"); // Вызов ошибки о невыполненом условии(для уведомления по email)
+        }
         try {
             assertEquals("Log in and get to work", driver.findElement(By.xpath("//div[@id='layout']/div[2]/div/h1")).getText());
-        } catch (Error e) {
-            verificationErrors.append("FAIL!'Log in and get to work' IS NOT FUND");
+        } catch (Exception e) {
+            throw new MyFirstTest.TestError("FAIL!'Log in and get to work' IS NOT FUND"); // Вызов ошибки о невыполненом условии(для уведомления по email)
+            //verificationErrors.append("FAIL!'Log in and get to work' IS NOT FUND");
         }
-
         //LogIn in with UpWork
         driver.findElement(By.id("login_username")).clear();
         driver.findElement(By.id("login_username")).sendKeys("maria_proshyna");
@@ -72,35 +71,18 @@ public class MyFirstTest {
 
         driver.switchTo().window(homePage);  // switch back to parent window
 
-        // wait for 60 sec for element "Poisk" displayed
-
-       boolean isPoiskFound = false;
-        for (int second = 0; second <= 60; second++) {
-            try {
-                if (driver.findElement(By.xpath("//li/a[contains(@href,'index')]")).isDisplayed()) {
-                    isPoiskFound = true;
-                    break;
-                }
-            } catch (Exception e) {
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-
-            }
+        try {
+            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//li/a[contains(@href,'index')]")));
+        } catch (Exception e) {
+            throw new MyFirstTest.TestError("FAIL!' The Tab 'Search'(Poisk) IS NOT FOUND");
         }
-        if (isPoiskFound == false) {
-            verificationErrors.append("FAIL! Menu Item 'Poisk' HES NOT FOUND");
-        }
-
         driver.findElement(By.xpath("//li/a[contains(@href,'index')]")).click();    // Click on menu Item "Poisk"
 
         //Wait for  string 'Опыт:'
         try {
-            WebDriverWait wait = new WebDriverWait(driver, 15);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='vspacer15']//div//label[contains(text(),'Beginner')]")));
+            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='vspacer15']//div//label[contains(text(),'Beginner')]")));
         } catch (Exception e) {
-            verificationErrors.append("FAIL! String 'Beginner:'(in  filter) IS NOT FOUND");
+            throw new MyFirstTest.TestError("FAIL! String 'Beginner:'(filter item) IS NOT FOUND");
         }
         //<LOGIN TESTING: FINISH>
 
@@ -110,32 +92,22 @@ public class MyFirstTest {
         Long currentUnixTime = new Long(now.getTime() / 1000);
 
         // Get successfulDate
-        String SuccessDate = driver.findElement(By.xpath("//p")).getAttribute("data-unixtime");
+        String SuccessfulDate = driver.findElement(By.xpath("//p")).getAttribute("data-unixtime");
 
         //Converting successfulDate in UnixTime
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss");
         Date date = null;
         try {
-            date = dateFormat.parse(SuccessDate);
+            date = dateFormat.parse(SuccessfulDate);
         } catch (ParseException e) {
-            verificationErrors.append("FAIL! ParseExaptionError".toString());
+            throw new MyFirstTest.TestError("FAIL! ParseExaptionError");
         }
         long successDateUnixTime = date.getTime() / 1000;
 
         //Count dateResult
         long dateResult = (currentUnixTime - successDateUnixTime);
-
-
-        if (dateResult < 1800) {
-        }  //Seconds
-        else {
-            try {
-                FileUtils.writeStringToFile(new File("test.txt"), "FAIL! Time is much then 30 sec!");
-                // PrintWriter myfile = new PrintWriter("data.txt");
-                // out.println("proba pera -FAIL! Time is much then 30 sec!");
-            } catch (Exception e) {
-            }
-            //verificationErrors.append("FAIL! Time is much then 30 sec!");
+        if (dateResult > 1800) {   //Seconds
+            throw new MyFirstTest.TestError("FAIL! Current Time much then Time of Last successful synchronization more then 30 min !");
         }
         // <TESTING OF LAST SUCCESSFUL SYNCHRONIZATION: FINISH>
 
@@ -147,36 +119,32 @@ public class MyFirstTest {
 
         //Wait for Searching word
         try {
-            WebDriverWait wait = new WebDriverWait(driver, 15);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ul[@id='search-list']/li//em")));
+            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ul[@id='search-list']/li//em")));
         } catch (Exception e) {
-            verificationErrors.append("FAIL! Searching word IS NOT FOUND".toString());
-
+            throw new MyFirstTest.TestError("FAIL! Searching word IS NOT FOUND (xpath: '//ul[@id='search-list']/li//em')");
         }
 
         // Check Is the Searching word present
         String XPath = "//ul[@id='search-list']/li//em[contains(text(),'php')]";
         Boolean isElementPresent = driver.findElements(By.xpath(XPath)).size() != 0;
-        if (isElementPresent == true) {
+        if (isElementPresent) {
         } else {
-            verificationErrors.append("FAIL! Targeted Text Box Is NOT Present On The Page".toString());
-
+            throw new MyFirstTest.TestError("FAIL! Searching word 'php' Is NOT Present On The Page");
         }
 
         // Verify element "Fixed" Not Present present
         Boolean isFixedPresent = driver.findElements(By.xpath("//strong[contains(text(),'Fixed')]")).size() != 0;
-        if (isFixedPresent == false) {
+        if (!isFixedPresent) {
         } else {
-            verificationErrors.append("FAIL! Payment type 'FIXED'' Is Present On The Page");
+            throw new MyFirstTest.TestError("FAIL! Payment type 'FIXED' Is Present On The Page, but filtered by 'Hourly'");
         }
 
         // Assert Is the filter option "Hourly" present
         try {
             assertEquals("Hourly", driver.findElement(By.xpath("//div[@class='pull-left']")).getText());
         } catch (Exception e) {
-            verificationErrors.append("FAIL! 'Hourly' NOT FOUND");
+            throw new MyFirstTest.TestError("FAIL! 'Hourly' NOT FOUND");
         }
-
         //<FILTER AND SEARCH TESTING: FINISH>
 
         //Exit from http://arribasales.sandice.net
@@ -188,13 +156,25 @@ public class MyFirstTest {
         //Shows all errors which were written in log file
         out.println(verificationErrors.toString());
 
+    }
+
+    @AfterTest
+    public void afterTest() {
         driver.quit();
     }
 
+
+    public class TestError extends RuntimeException {
+
+        public TestError(String message) {  // Конструктор
+            super(message);
+        }
+    }
 }
 
 
-
+// FileUtils.writeStringToFile(new File("test.txt"), "FAIL! Time is much then 30 sec!");
+//verificationErrors.append("FAIL! Targeted Text Box Is NOT Present On The Page");
 
 
 
