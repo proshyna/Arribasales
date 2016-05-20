@@ -28,14 +28,19 @@ public class MyFirstTest {
 
         //driver.manage().window().maximize();
         StringBuffer verificationErrors = new StringBuffer();
-        WebDriverWait myDynamicElement = new WebDriverWait(driver, 10);
+        WebDriverWait myDynamicElement = new WebDriverWait(driver, 30);
 
         //<LOGIN TESTING: START>
         driver.navigate().to("http://user:greendev0987@arribasales.sandice.net");
 
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        try {
+            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='auth-clients']//a[contains(@href,'upwork')]")));
+        } catch (Exception e) {
+            throw new MyFirstTest.TestError("FAIL! Link on UPWORK IS NOT FOUND");
+        }
 
         driver.findElement(By.xpath("//div[@class='auth-clients']//a[contains(@href,'upwork')]")).click();
+      //  driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
 
         String homePage = driver.getWindowHandle(); // Store your parent window
 
@@ -150,6 +155,11 @@ public class MyFirstTest {
         //Exit from http://arribasales.sandice.net
         driver.findElement(By.xpath("//button[@class='btn btn-default pull-right']")).click();
         driver.navigate().to("https://www.upwork.com");
+        try {
+            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='layout']//span[@class='caret']")));
+        } catch (Exception e) {
+            throw new MyFirstTest.TestError("FAIL! Upwork menu Lod out Is Not Found");
+        }
         driver.findElement(By.xpath("//div[@id='layout']//span[@class='caret']")).click();
         driver.findElement(By.xpath("//div[@id='skinny-nav']/ul[2]/li[4]/ul/li[4]/a")).click();
 
