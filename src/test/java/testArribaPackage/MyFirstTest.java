@@ -1,14 +1,21 @@
 package testArribaPackage;
 
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.annotations.AfterTest;
 //import org.junit.Test;
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,13 +41,13 @@ public class MyFirstTest {
         driver.navigate().to("http://user:greendev0987@arribasales.sandice.net");
 
         try {
-            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='auth-clients']//a[contains(@href,'upwork')]")));
+            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='w0']//a[contains(@href,'upwork')]")));
         } catch (Exception e) {
             throw new MyFirstTest.TestError("FAIL! Link on UPWORK IS NOT FOUND");
         }
 
         driver.findElement(By.xpath("//div[@class='auth-clients']//a[contains(@href,'upwork')]")).click();
-      //  driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+        //  driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
 
         String homePage = driver.getWindowHandle(); // Store your parent window
 
@@ -55,7 +62,7 @@ public class MyFirstTest {
         driver.switchTo().window(subWindowHandler); // switch to popup window
 
         // perform operations on popup
-            //check "Log in and get to work" text exist
+        //check "Log in and get to work" text exist
         try {
             myDynamicElement.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='layout']/div[2]/div/h1")));
         } catch (Exception e) {
@@ -180,9 +187,18 @@ public class MyFirstTest {
             super(message);
         }
     }
+
+
+    @AfterMethod
+    public void takeScreenShotOnFailure(ITestResult testResult) throws IOException {
+        if (testResult.getStatus() == ITestResult.FAILURE) {
+            System.out.println(testResult.getStatus());
+            File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(scrFile, new File("D:\\testScreenShot.jpg"));
+        }
+    }
+
 }
-
-
 
 // FileUtils.writeStringToFile(new File("test.txt"), "FAIL! Time is much then 30 sec!");
 //verificationErrors.append("FAIL! Targeted Text Box Is NOT Present On The Page");
