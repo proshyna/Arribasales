@@ -165,7 +165,7 @@ public class MyFirstTest {
         try {
             myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='layout']//span[@class='caret']")));
         } catch (Exception e) {
-            throw new MyFirstTest.TestError("FAIL! Upwork menu Lod out Is Not Found");
+            throw new MyFirstTest.TestError("FAIL! Upwork menu Log out Is Not Found");
         }
         driver.findElement(By.xpath("//div[@id='layout']//span[@class='caret']")).click();
         driver.findElement(By.xpath("//div[@id='skinny-nav']/ul[2]/li[4]/ul/li[4]/a")).click();
