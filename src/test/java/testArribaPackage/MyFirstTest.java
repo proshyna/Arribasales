@@ -6,7 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
@@ -21,17 +21,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import static java.lang.System.out;
 import static org.junit.Assert.assertEquals;
 
 
 public class MyFirstTest {
-    private WebDriver driver = new FirefoxDriver();
+
+
+    //private WebDriver driver = new FirefoxDriver();
+    static WebDriver driver;
 
     @Test
     public void testStartWebDriver() {
-
+        System.setProperty("webdriver.chrome.driver", "D:\\SeleniumTest\\chromedriver_win32\\chromedriver.exe");
+        driver =  new ChromeDriver();
 
         //driver.manage().window().maximize();
         StringBuffer verificationErrors = new StringBuffer();
@@ -189,15 +192,15 @@ public class MyFirstTest {
     }
 
 
-    @AfterMethod
+   @AfterMethod
     public void takeScreenShotOnFailure(ITestResult testResult) throws IOException {
-        if (testResult.getStatus() == ITestResult.FAILURE) {
-            System.out.println(testResult.getStatus());
-            File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-            FileUtils.copyFile(scrFile, new File("D:\\testScreenShot.jpg"));
-        }
-    }
+       if (testResult.getStatus() == ITestResult.FAILURE) {
+           System.out.println(testResult.getStatus());
+           File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+           FileUtils.copyFile(scrFile, new File("D:\\testScreenShot.jpg"));
+       }
 
+   }
 }
 
 // FileUtils.writeStringToFile(new File("test.txt"), "FAIL! Time is much then 30 sec!");
