@@ -52,7 +52,7 @@ public class MyFirstTest {
         // perform operations on popup
             //check "Log in and get to work" text exist
         try {
-            myDynamicElement.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='layout']/div[2]/div/h1")));
+            myDynamicElement.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='layout']/div[2]/div/h1888888888")));
         } catch (Exception e) {
             throw new MyFirstTest.TestError("FAIL!'Waiting for element present.Element '//div[@id='layout']/div[2]/div/h1' IS NOT FUND"); // Вызов ошибки о невыполненом условии(для уведомления по email)
         }
