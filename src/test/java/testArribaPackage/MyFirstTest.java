@@ -1,41 +1,56 @@
 package testArribaPackage;
 
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.annotations.AfterTest;
 //import org.junit.Test;
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import static java.lang.System.out;
 import static org.junit.Assert.assertEquals;
 
 
 public class MyFirstTest {
-    private WebDriver driver = new FirefoxDriver();
+
+
+    //private WebDriver driver = new FirefoxDriver();
+    static WebDriver driver;
 
     @Test
     public void testStartWebDriver() {
-
+        System.setProperty("webdriver.chrome.driver", "D:\\SeleniumTest\\chromedriver_win32\\chromedriver.exe");
+        driver =  new ChromeDriver();
 
         //driver.manage().window().maximize();
         StringBuffer verificationErrors = new StringBuffer();
-        WebDriverWait myDynamicElement = new WebDriverWait(driver, 10);
+        WebDriverWait myDynamicElement = new WebDriverWait(driver, 30);
 
         //<LOGIN TESTING: START>
         driver.navigate().to("http://user:greendev0987@arribasales.sandice.net");
 
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        try {
+            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='w0']//a[contains(@href,'upwork')]")));
+        } catch (Exception e) {
+            throw new MyFirstTest.TestError("FAIL! Link on UPWORK IS NOT FOUND");
+        }
 
         driver.findElement(By.xpath("//div[@class='auth-clients']//a[contains(@href,'upwork')]")).click();
+        //  driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
 
         String homePage = driver.getWindowHandle(); // Store your parent window
 
@@ -50,7 +65,7 @@ public class MyFirstTest {
         driver.switchTo().window(subWindowHandler); // switch to popup window
 
         // perform operations on popup
-            //check "Log in and get to work" text exist
+        //check "Log in and get to work" text exist
         try {
             myDynamicElement.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='layout']/div[2]/div/h1888888888")));
         } catch (Exception e) {
@@ -150,6 +165,11 @@ public class MyFirstTest {
         //Exit from http://arribasales.sandice.net
         driver.findElement(By.xpath("//button[@class='btn btn-default pull-right']")).click();
         driver.navigate().to("https://www.upwork.com");
+        try {
+            myDynamicElement.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='layout']//span[@class='caret']")));
+        } catch (Exception e) {
+            throw new MyFirstTest.TestError("FAIL! Upwork menu Log out Is Not Found");
+        }
         driver.findElement(By.xpath("//div[@id='layout']//span[@class='caret']")).click();
         driver.findElement(By.xpath("//div[@id='skinny-nav']/ul[2]/li[4]/ul/li[4]/a")).click();
 
@@ -170,9 +190,18 @@ public class MyFirstTest {
             super(message);
         }
     }
+
+
+   @AfterMethod
+    public void takeScreenShotOnFailure(ITestResult testResult) throws IOException {
+       if (testResult.getStatus() == ITestResult.FAILURE) {
+           System.out.println(testResult.getStatus());
+           File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+           FileUtils.copyFile(scrFile, new File("D:\\testScreenShot.jpg"));
+       }
+
+   }
 }
-
-
 
 // FileUtils.writeStringToFile(new File("test.txt"), "FAIL! Time is much then 30 sec!");
 //verificationErrors.append("FAIL! Targeted Text Box Is NOT Present On The Page");
